@@ -59,26 +59,46 @@ namespace GameModTranslateCopyTool
                     Console.WriteLine("資源未找到！");
                     return;
                 }
+
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    string jsonStr = reader.ReadToEnd();
-                    Dictionary<string, string> json = JsonSerializer.Deserialize<Dictionary<string,string>>(jsonStr);
-                    _keyAndValues.Clear();
-                    json = json.OrderByDescending(x => x.Key.Length).ToDictionary(x=>x.Key, x=>x.Value);
-                    foreach (KeyValuePair<string, string> item in json)
-                    {
-                        string key = item.Key;
-                        string value = item.Value;
-                        _keyAndValues.Add(new KeyAndValue(key, value));
-                        Console.WriteLine($"Json key: {key} value: {value}");
-                    }
-                    Console.WriteLine("Set json end.");
-                    Console.WriteLine();
+                    SetKeyValues(reader);
                 }
             }
 
         }
+        
+        public void SetCustomJson()
+        {
+            string filePath = Program.SelectFile("選擇替換字典的 Json 擋");
+            if (string.IsNullOrEmpty(filePath))
+            {
+                Console.WriteLine($"位置不可以為空，path: {filePath}");
+                return;
+            }
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                SetKeyValues(reader);
+            }
+        }
 
+        void SetKeyValues(StreamReader reader)
+        {
+            string jsonStr = reader.ReadToEnd();
+            Dictionary<string, string> json = JsonSerializer.Deserialize<Dictionary<string,string>>(jsonStr);
+            _keyAndValues.Clear();
+            json = json.OrderByDescending(x => x.Key.Length).ToDictionary(x=>x.Key, x=>x.Value);
+            foreach (KeyValuePair<string, string> item in json)
+            {
+                string key = item.Key;
+                string value = item.Value;
+                _keyAndValues.Add(new KeyAndValue(key, value));
+                Console.WriteLine($"Json key: {key} value: {value}");
+            }
+            Console.WriteLine("Set json end.");
+            Console.WriteLine();
+        }
+        
         public void CopySomeExtensionFile(string extension)
         {
             string path = Program.SelectDirectory("選取要複製的簡體中文資料夾根目錄");

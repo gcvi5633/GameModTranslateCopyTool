@@ -30,7 +30,7 @@ namespace GameModTranslateCopyTool
             while (true)
             {
                 bool exit = false;
-                var needConvert = WaitReadLine("選擇進行的動作：\n1. 轉換 ANSI 成 UTF8\n2. 單純轉換字典\n3. 只複製某個副檔名的檔案\n其他：下一步");
+                var needConvert = WaitReadLine("選擇進行的動作：\n1. 轉換 ANSI 成 UTF8\n2. 單純轉換字典\n3. 只複製某個副檔名的檔案\n4. 更換字典 Json\n其他：下一步");
                 switch (needConvert.ToLower())
                 {
                     case "1":
@@ -49,6 +49,9 @@ namespace GameModTranslateCopyTool
                     case "3":
                         var extension = WaitReadLine("請輸入副檔名，例如，'.txt'：");
                         translateTool.CopySomeExtensionFile(extension);
+                        break;
+                    case "4":
+                        translateTool.SetCustomJson();
                         break;
                     default:
                         exit = true;
@@ -139,6 +142,26 @@ namespace GameModTranslateCopyTool
             }
         }
 
+        public static string SelectFile(string title)
+        {
+            using (var fileDialog = new CommonOpenFileDialog())
+            {
+                fileDialog.Title = title;
+                var show = fileDialog.ShowDialog();
+                if (show == CommonFileDialogResult.Ok)
+                {
+                    var path = fileDialog.FileName;
+                    Console.WriteLine($"檔案路徑: {path}");
+                    return path;
+                }
+                else
+                {
+                    Console.WriteLine($"取消");
+                }
+                return string.Empty;
+            }
+        }
+        
         static void OpenFileTest()
         {
             using (var fileDialog = new CommonOpenFileDialog())
